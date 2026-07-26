@@ -7,7 +7,7 @@
   "editorType": ["figma", "dev"],
   "documentAccess": "dynamic-page",
   "networkAccess": {
-    "allowedDomains": ["ws://127.0.0.1"],
-    "reasoning": "Connects only to a local bridge server on 127.0.0.1 over a WebSocket to receive design commands. No external network access."
+    "allowedDomains": ["*"],
+    "reasoning": "Connects only to a local bridge server on 127.0.0.1 (loopback) over a WebSocket to receive design commands. Figma's allowedDomains validator rejects a bare ws://127.0.0.1 entry, and the port is user-configurable, so this is declared as '*'; in practice no data leaves the machine and no external host is contacted."
   }
 }
