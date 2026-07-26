@@ -15,7 +15,7 @@
 const KEY = "bridgeKey";
 const GAP = 80; // canvas gutter between tiled screens
 
-figma.showUI(__html__, { width: 260, height: 150 });
+figma.showUI(__html__, { width: 300, height: 188 });
 
 figma.ui.onmessage = async (msg) => {
   if (!msg || !msg.id) return;
