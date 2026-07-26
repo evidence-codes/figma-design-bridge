@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 900px; height: 506px; overflow: hidden; }
+  body {
+    background: linear-gradient(135deg, #16241E, #0E1713);
+    font-family: 'Inter','SF Pro Text','Helvetica Neue',Arial,sans-serif;
+    color: #fff; display: flex; align-items: center; gap: 0; padding: 34px;
+  }
+  /* left: spec */
+  .spec {
+    width: 330px; flex: none; align-self: stretch;
+    background: #0C1511; border: 1px solid #21362D; border-radius: 14px;
+    padding: 18px 18px; font: 12.5px/1.7 ui-monospace,'SF Mono',monospace;
+    overflow: hidden;
+  }
+  .spec .cap { font: 600 11px/1 'Inter',sans-serif; letter-spacing: .12em;
+    text-transform: uppercase; color: #5F8A78; margin-bottom: 12px; }
+  .ln { white-space: pre; opacity: 0; transform: translateY(4px); }
+  .k { color: #8FB6A3; } .s { color: #E7C48A; } .n { color: #86B8FF; }
+  .p { color: #6E8A80; }
+  /* middle: arrow */
+  .mid { flex: none; width: 96px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px; }
+  .pill { font: 600 11px/1 'Inter',sans-serif; letter-spacing: .08em; color: #0E1713;
+    background: #25B98A; padding: 5px 9px; border-radius: 999px; }
+  .arrow { color: #3E7A64; font-size: 22px; }
+  /* right: canvas */
+  .canvas {
+    flex: 1; align-self: stretch; background: #FBFBF9; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; padding: 26px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.35);
+  }
+  .card { width: 100%; background: #fff; border: 1px solid #ECEAE2; border-radius: 12px;
+    padding: 22px; opacity: 0; transform: translateY(10px) scale(.98); transform-origin: center; }
+  .card h2 { color: #14201C; font: 600 19px/1.25 'Inter',sans-serif; opacity: 0;
+    transform: translateY(6px); }
+  .row { display: flex; align-items: center; gap: 12px; margin-top: 16px;
+    background: #E7F0EB; border-radius: 8px; padding: 12px 14px; opacity: 0;
+    transform: translateY(6px); }
+  .chip { color: #1F5F45; background: #CDE4D8; font: 600 11px/1 'Inter',sans-serif;
+    padding: 5px 8px; border-radius: 6px; opacity: 0; }
+  .val { color: #14201C; font: 14px/1.3 'Inter',sans-serif; opacity: 0; }
+  .fee { display:flex; justify-content:space-between; margin-top:14px; opacity:0;
+    transform: translateY(6px); font: 14px/1.3 'Inter',sans-serif; color:#14201C; }
+  .fee b { color:#2C6ED6; }
+</style>
+</head>
+<body>
+  <div class="spec">
+    <div class="cap">render_screen · spec</div>
+    <div class="ln" data-at="0.02"><span class="p">{</span></div>
+    <div class="ln" data-at="0.06">  <span class="k">"type"</span>: <span class="s">"frame"</span>,</div>
+    <div class="ln" data-at="0.10">  <span class="k">"layout"</span>: <span class="s">"col"</span>, <span class="k">"pad"</span>: <span class="n">22</span>,</div>
+    <div class="ln" data-at="0.14">  <span class="k">"children"</span>: [</div>
+    <div class="ln" data-at="0.18">    <span class="p">{</span> <span class="k">"type"</span>:<span class="s">"text"</span>,</div>
+    <div class="ln" data-at="0.21">      <span class="k">"content"</span>:<span class="s">"Northbay site"</span> <span class="p">},</span></div>
+    <div class="ln" data-at="0.25">    <span class="p">{</span> <span class="k">"type"</span>:<span class="s">"frame"</span>,</div>
+    <div class="ln" data-at="0.28">      <span class="k">"fill"</span>:<span class="s">"#E7F0EB"</span>,</div>
+    <div class="ln" data-at="0.31">      <span class="k">"children"</span>: [<span class="s">"Stated"</span>,</div>
+    <div class="ln" data-at="0.34">        <span class="s">"Five-page site"</span>] <span class="p">}</span></div>
+    <div class="ln" data-at="0.37">  ]</div>
+    <div class="ln" data-at="0.40"><span class="p">}</span></div>
+  </div>
+
+  <div class="mid">
+    <div class="pill" id="pill">MCP</div>
+    <div class="arrow">→</div>
+  </div>
+
+  <div class="canvas">
+    <div class="card" id="card">
+      <h2 id="title">Northbay marketing site</h2>
+      <div class="row" id="row">
+        <span class="chip" id="chip">Stated</span>
+        <span class="val" id="val">Five-page marketing site</span>
+      </div>
+      <div class="fee" id="fee"><span>Fee</span><b>$18,000</b></div>
+    </div>
+  </div>
+
+<script>
+  var q = new URLSearchParams(location.search);
+  var f = Number(q.get('f') || 0), n = Number(q.get('n') || 1);
+  var t = n > 1 ? f / (n - 1) : 1;
+
+  // ease a property in over `span` starting at `at`
+  function e(at, span) {
+    var x = (t - at) / span;
+    return Math.max(0, Math.min(1, x));
+  }
+  function ease(v){ return v<.5 ? 2*v*v : 1-Math.pow(-2*v+2,2)/2; }
+
+  // spec lines reveal
+  document.querySelectorAll('.ln').forEach(function(el){
+    var a = ease(e(Number(el.dataset.at), 0.05));
+    el.style.opacity = a;
+    el.style.transform = 'translateY(' + (1-a)*4 + 'px)';
+  });
+
+  // MCP pill pulse around t=0.42
+  var pulse = 1 + 0.12 * Math.max(0, Math.sin((t-0.38)*12)) * (t>0.38 && t<0.62 ? 1 : 0);
+  document.getElementById('pill').style.transform = 'scale(' + pulse + ')';
+
+  function set(id, at, span, ty){
+    var a = ease(e(at, span)); var el = document.getElementById(id);
+    el.style.opacity = a;
+    if (ty) el.style.transform = 'translateY(' + (1-a)*ty + 'px)';
+  }
+  // card assembles
+  var cardA = ease(e(0.46, 0.08));
+  var card = document.getElementById('card');
+  card.style.opacity = cardA;
+  card.style.transform = 'translateY(' + (1-cardA)*10 + 'px) scale(' + (0.98+0.02*cardA) + ')';
+  set('title', 0.54, 0.07, 6);
+  set('row',   0.64, 0.08, 6);
+  set('chip',  0.70, 0.06, 0);
+  set('val',   0.74, 0.07, 0);
+  set('fee',   0.82, 0.07, 6);
+</script>
+</body>
+</html>

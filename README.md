@@ -16,6 +16,12 @@ talks to, a local WebSocket, and a Figma plugin that does the actual building.
 agent → MCP server → ws://127.0.0.1:3055 → plugin UI iframe → plugin sandbox → canvas
 ```
 
+<p align="center">
+  <img src="assets/demo.gif" alt="A typed spec becomes a rendered frame on the Figma canvas" width="820">
+</p>
+
+<sub>Illustration of the flow — a `render_screen` spec becomes real auto-layout on the canvas.</sub>
+
 ## Setup
 
 You need two halves running: the server (once) and the plugin (per Figma file).
@@ -74,9 +80,11 @@ claude mcp add figma-bridge -- node "$(pwd)/src/server.js"
 
 - **From Figma Community:** *(link once published)* — click Install, then run it
   from `Plugins → Design Bridge`.
-- **From source:** Figma desktop → open a Design file → right-click the canvas →
-  `Plugins → Development → Import plugin from manifest…` → pick
-  `plugin/manifest.json`, then run `Plugins → Development → Design Bridge`.
+- **From source:** grab
+  [`design-bridge-plugin.zip`](https://github.com/evidence-codes/figma-design-bridge/releases/latest)
+  (or use the `plugin/` folder from a clone). Figma desktop → open a Design file →
+  right-click the canvas → `Plugins → Development → Import plugin from manifest…`
+  → pick `plugin/manifest.json`, then run `Plugins → Development → Design Bridge`.
 
 A small panel appears with a green dot when it finds the server. **Leave that
 panel open** — closing it kills the socket.
