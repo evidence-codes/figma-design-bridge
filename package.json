@@ -1,0 +1,39 @@
+{
+  "name": "figma-design-bridge",
+  "version": "0.1.0",
+  "description": "MCP server that lets an agent write design specs onto a Figma canvas",
+  "type": "module",
+  "main": "src/server.js",
+  "bin": {
+    "figma-design-bridge": "src/server.js"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "keywords": [
+    "figma",
+    "mcp",
+    "model-context-protocol",
+    "design",
+    "claude",
+    "code-to-design"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evidence-codes/figma-design-bridge.git"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

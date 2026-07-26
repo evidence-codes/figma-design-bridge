@@ -1,0 +1,13 @@
+{
+  "name": "Design Bridge",
+  "id": "design-bridge-local-dev",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "editorType": ["figma", "dev"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": ["ws://127.0.0.1"],
+    "reasoning": "Connects only to a local bridge server on 127.0.0.1 over a WebSocket to receive design commands. No external network access."
+  }
+}

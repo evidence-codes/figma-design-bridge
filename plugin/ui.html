@@ -1,0 +1,86 @@
+<!--
+  This iframe exists for one reason: the plugin's main thread is a sandbox
+  with no network access. It cannot open a socket. This can. Everything
+  here is a relay — no Figma API calls, no logic.
+
+  The port must match the bridge server. Default is 3055; if you started the
+  server with FIGMA_BRIDGE_PORT set, type the same value in the field below.
+-->
+<style>
+  body {
+    font: 12px/1.5 "Inter", -apple-system, sans-serif;
+    margin: 0; padding: 14px; color: #14201c;
+  }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #b4b2a9; flex: none; }
+  .dot.on { background: #1f9e75; }
+  .dot.err { background: #e24b4a; }
+  h1 { font-size: 12px; font-weight: 600; margin: 0 0 2px; }
+  p { margin: 6px 0 0; color: #5a6560; }
+  code { font-family: ui-monospace, monospace; font-size: 11px; }
+  .port { margin-top: 10px; color: #5a6560; }
+  .port input {
+    width: 64px; font: 11px ui-monospace, monospace; padding: 2px 4px;
+    border: 1px solid #d9d7cd; border-radius: 4px; color: #14201c;
+  }
+</style>
+
+<div class="row"><span class="dot" id="dot"></span><h1>Design Bridge</h1></div>
+<p id="msg">Connecting…</p>
+<div class="port">
+  <label>Port <input id="port" type="number" min="1" max="65535" /></label>
+</div>
+
+<script>
+  var DEFAULT_PORT = 3055;
+  var ws, retry = 0, timer;
+
+  var portInput = document.getElementById("port");
+  portInput.value = localStorage.getItem("bridgePort") || DEFAULT_PORT;
+
+  function setState(cls, text) {
+    document.getElementById("dot").className = "dot " + cls;
+    document.getElementById("msg").innerHTML = text;
+  }
+
+  function connect() {
+    if (timer) clearTimeout(timer);
+    if (ws) { try { ws.close(); } catch (e) {} }
+
+    var port = portInput.value || DEFAULT_PORT;
+    localStorage.setItem("bridgePort", port);
+    ws = new WebSocket("ws://127.0.0.1:" + port);
+
+    ws.onopen = function () {
+      retry = 0;
+      setState("on", "Connected. Leave this window open while you work.");
+    };
+
+    // Server -> plugin sandbox
+    ws.onmessage = function (e) {
+      parent.postMessage({ pluginMessage: JSON.parse(e.data) }, "*");
+    };
+
+    ws.onclose = function () {
+      var wait = Math.min(1000 * Math.pow(2, retry++), 15000);
+      setState("", "Disconnected. Retrying in " + Math.round(wait / 1000) + "s…");
+      timer = setTimeout(connect, wait);
+    };
+
+    ws.onerror = function () {
+      setState("err", "Can't reach the bridge on port " + port +
+        ". Is <code>npm start</code> running?");
+    };
+  }
+
+  // Reconnect immediately when the port is changed.
+  portInput.onchange = function () { retry = 0; connect(); };
+
+  // Plugin sandbox -> server
+  onmessage = function (event) {
+    var msg = event.data.pluginMessage;
+    if (msg && ws && ws.readyState === 1) ws.send(JSON.stringify(msg));
+  };
+
+  connect();
+</script>
