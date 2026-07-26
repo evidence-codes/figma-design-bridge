@@ -1,0 +1,45 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#16241E"/>
+      <stop offset="1" stop-color="#0E1713"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#25B98A"/>
+      <stop offset="1" stop-color="#1B7D5D"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#25B98A" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#25B98A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <rect width="1280" height="640" fill="url(#glow)"/>
+
+  <!-- logo tile -->
+  <g transform="translate(150 170) scale(0.586)">
+    <rect width="512" height="512" rx="116" fill="url(#tile)"/>
+    <g stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <g stroke-width="10" opacity="0.92">
+        <path d="M218 208 V330"/>
+        <path d="M256 219 V330"/>
+        <path d="M294 208 V330"/>
+      </g>
+      <path d="M96 332 L180 176 Q256 262 332 176 L416 332" stroke-width="18"/>
+      <path d="M180 176 V342" stroke-width="22"/>
+      <path d="M332 176 V342" stroke-width="22"/>
+      <path d="M96 340 H416" stroke-width="26"/>
+    </g>
+  </g>
+
+  <!-- wordmark -->
+  <text x="470" y="300" font-family="'Inter','SF Pro Display','Helvetica Neue',Arial,sans-serif"
+        font-size="92" font-weight="700" fill="#FFFFFF" letter-spacing="-2">Design Bridge</text>
+  <text x="474" y="360" font-family="'Inter','SF Pro Text','Helvetica Neue',Arial,sans-serif"
+        font-size="33" font-weight="400" fill="#8FB6A3">Write real Figma designs from a typed spec.</text>
+
+  <!-- code → canvas hint -->
+  <text x="474" y="432" font-family="ui-monospace,'SF Mono','JetBrains Mono',monospace"
+        font-size="26" font-weight="400" fill="#5F8A78">spec → MCP → ws://127.0.0.1 → Figma canvas</text>
+</svg>

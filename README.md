@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="Design Bridge — write real Figma designs from a typed spec" width="820">
+</p>
+
 # Design Bridge
 
 An MCP server that lets an AI agent (Claude Code, or any MCP client) write real
