@@ -1,0 +1,44 @@
+name: CI
+
+# Fast safety net on every push and PR: make sure the code parses and the
+# package would publish cleanly, so a broken release never gets cut.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 22]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Syntax-check all server sources
+        run: |
+          for f in src/*.js plugin/code.js; do
+            echo "checking $f"
+            node --check "$f"
+          done
+
+      - name: Server CLI smoke test
+        run: |
+          test "$(node src/server.js --version)" = "$(node -p "require('./package.json').version")"
+          node src/server.js --help | grep -q "Design Bridge"
+
+      - name: Validate plugin manifest
+        run: node -e "JSON.parse(require('fs').readFileSync('plugin/manifest.json','utf8'))"
+
+      - name: Dry-run publish (verify package contents)
+        run: npm publish --dry-run
