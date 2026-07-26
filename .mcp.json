@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "figma-bridge": {
+      "command": "node",
+      "args": ["src/server.js"]
+    }
+  }
+}

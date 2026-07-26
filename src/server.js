@@ -3,9 +3,103 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { WebSocketServer } from "ws";
 import { z } from "zod";
+import { readFileSync } from "node:fs";
+import { createServer as createNetServer } from "node:net";
 import { ScreenSpec, VariableSpec, collectFonts } from "./schema.js";
 
-const PORT = Number(process.env.FIGMA_BRIDGE_PORT ?? 3055);
+/* ------------------------------------------------------------------ *
+ * CLI preamble
+ *
+ * This is an MCP server — normally an MCP client spawns it and talks to
+ * it over stdio, so running it by hand looks like a silent hang. These
+ * flags give a person who runs it directly something useful instead:
+ * --help, --version, and --doctor (a preflight that checks the things
+ * that actually break installs).
+ * ------------------------------------------------------------------ */
+
+const argv = process.argv.slice(2);
+const has = (...names) => names.some((n) => argv.includes(n));
+function flagValue(name) {
+  const i = argv.findIndex((a) => a === name || a.startsWith(name + "="));
+  if (i === -1) return undefined;
+  return argv[i].includes("=") ? argv[i].split("=").slice(1).join("=") : argv[i + 1];
+}
+
+const pkg = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8")
+);
+const PORT = Number(flagValue("--port") ?? process.env.FIGMA_BRIDGE_PORT ?? 3055);
+const nodeMajor = Number(process.versions.node.split(".")[0]);
+
+const HELP = `Design Bridge ${pkg.version} — write real Figma designs from a typed spec, over MCP.
+
+This is an MCP server. It is normally launched by your MCP client, not by hand:
+
+  claude mcp add figma-bridge -- npx -y ${pkg.name}
+
+Usage:
+  figma-design-bridge [options]
+
+Options:
+  --port <n>     WebSocket port the Figma plugin connects to (default 3055).
+                 Also settable via FIGMA_BRIDGE_PORT. Must match the plugin's
+                 Port field.
+  --doctor       Check Node and port, then print the setup steps. Run this first
+                 if the install won't connect.
+  --version, -v  Print version.
+  --help, -h     Show this help.
+
+After registering the server, open your file in the Figma desktop app, run the
+Design Bridge plugin, and leave its panel open (green dot = connected).
+`;
+
+if (has("--version", "-v")) {
+  process.stdout.write(pkg.version + "\n");
+  process.exit(0);
+}
+if (has("--help", "-h")) {
+  process.stdout.write(HELP);
+  process.exit(0);
+}
+
+// A too-old Node fails deep inside the SDK with an opaque error. Say so plainly.
+if (nodeMajor < 18) {
+  process.stderr.write(
+    `[figma-bridge] Node ${process.versions.node} is too old — this needs Node 18 or newer.\n`
+  );
+  process.exit(1);
+}
+
+function portFree(port) {
+  return new Promise((resolve) => {
+    const probe = createNetServer();
+    probe.once("error", () => resolve(false));
+    probe.once("listening", () => probe.close(() => resolve(true)));
+    probe.listen(port, "127.0.0.1");
+  });
+}
+
+async function doctor() {
+  const mark = (b) => (b ? "✓" : "✗");
+  const nodeOk = nodeMajor >= 18;
+  const free = await portFree(PORT);
+  process.stdout.write(
+    `Design Bridge doctor\n\n` +
+      `  ${mark(nodeOk)} Node ${process.versions.node} (need 18+)\n` +
+      `  ${mark(free)} port ${PORT} ${
+        free ? "is free" : "is IN USE — stop the other process, or pass --port <n>"
+      }\n\n` +
+      `Next steps:\n` +
+      `  1. Register the server:  claude mcp add figma-bridge -- npx -y ${pkg.name}\n` +
+      `  2. In the Figma desktop app, run the Design Bridge plugin (leave it open).\n` +
+      `  3. Ask your agent to call figma_status — it should name your file.\n`
+  );
+}
+
+if (has("--doctor")) {
+  await doctor();
+  process.exit(0);
+}
 
 /* ------------------------------------------------------------------ *
  * Transport to the plugin
@@ -188,7 +282,10 @@ function text(body) {
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
-log(`listening for the Figma plugin on ws://127.0.0.1:${PORT}`);
+log(
+  `ready on ws://127.0.0.1:${PORT} — now run the Design Bridge plugin in the ` +
+    `Figma desktop app (leave its panel open). Run with --doctor to preflight.`
+);
 
 for (const sig of ["SIGINT", "SIGTERM"]) {
   process.on(sig, () => {

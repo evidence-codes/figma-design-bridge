@@ -19,6 +19,17 @@ agent → MCP server → ws://127.0.0.1:3055 → plugin UI iframe → plugin san
 ## Setup
 
 You need two halves running: the server (once) and the plugin (per Figma file).
+It takes about two minutes. Requires **Node 18+** and the **Figma desktop app**
+(the plugin can't run in the browser).
+
+**0. Preflight (optional)**
+
+```bash
+npx -y figma-design-bridge --doctor
+```
+
+Checks your Node version and that the port is free, then prints the exact next
+steps. Run it first if anything won't connect.
 
 **1. Register the server with your MCP client**
 
@@ -28,6 +39,25 @@ No clone required — run it straight from npm:
 claude mcp add figma-bridge -- npx -y figma-design-bridge
 claude mcp list   # should show figma-bridge
 ```
+
+<details>
+<summary>Other MCP clients (Cursor, Windsurf, Claude Desktop)</summary>
+
+Any MCP client works — point it at the same command. Add this to the client's
+MCP config (`.mcp.json`, `.cursor/mcp.json`, or Claude Desktop's
+`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "figma-bridge": {
+      "command": "npx",
+      "args": ["-y", "figma-design-bridge"]
+    }
+  }
+}
+```
+</details>
 
 <details>
 <summary>Or run from a clone</summary>
@@ -114,9 +144,12 @@ model must learn.
 
 ## Configuration
 
-The server listens on `127.0.0.1:3055`. To change it, set `FIGMA_BRIDGE_PORT`
-before launching **and** type the same port into the plugin panel's **Port**
-field — both halves must agree.
+The server listens on `127.0.0.1:3055`. To change it, pass `--port <n>` (or set
+`FIGMA_BRIDGE_PORT`) **and** type the same port into the plugin panel's **Port**
+field — both halves must agree. `npx figma-design-bridge --doctor` will tell you
+if the default port is already taken.
+
+Run `npx figma-design-bridge --help` for all flags.
 
 ## Things that will bite
 
