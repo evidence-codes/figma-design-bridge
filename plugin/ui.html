@@ -88,8 +88,17 @@
   var DEFAULT_PORT = 3055;
   var ws, retry = 0, timer;
 
+  // Figma's plugin iframe can run at a null origin where localStorage throws.
+  // Guard it so a storage failure never aborts the connect logic.
+  function loadPort() {
+    try { return localStorage.getItem("bridgePort"); } catch (e) { return null; }
+  }
+  function savePort(v) {
+    try { localStorage.setItem("bridgePort", v); } catch (e) {}
+  }
+
   var portInput = document.getElementById("port");
-  portInput.value = localStorage.getItem("bridgePort") || DEFAULT_PORT;
+  portInput.value = loadPort() || DEFAULT_PORT;
 
   function setState(cls, text) {
     document.getElementById("dot").className = "dot " + cls;
@@ -101,7 +110,7 @@
     if (ws) { try { ws.close(); } catch (e) {} }
 
     var port = portInput.value || DEFAULT_PORT;
-    localStorage.setItem("bridgePort", port);
+    savePort(port);
     ws = new WebSocket("ws://127.0.0.1:" + port);
 
     ws.onopen = function () {
