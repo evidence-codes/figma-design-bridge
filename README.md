@@ -2,6 +2,13 @@
   <img src="assets/banner.png" alt="Design Bridge — write real Figma designs from a typed spec" width="820">
 </p>
 
+<p align="center">
+  <a href="https://www.npmjs.com/package/figma-design-bridge"><img src="https://img.shields.io/npm/v/figma-design-bridge?color=1F9E75&label=npm" alt="npm version"></a>
+  <a href="https://github.com/evidence-codes/figma-design-bridge/actions/workflows/ci.yml"><img src="https://github.com/evidence-codes/figma-design-bridge/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/npm/l/figma-design-bridge?color=1F9E75" alt="MIT license"></a>
+  <img src="https://img.shields.io/node/v/figma-design-bridge?color=1F9E75" alt="Node version">
+</p>
+
 # Design Bridge
 
 An MCP server that lets an AI agent (Claude Code, or any MCP client) write real
