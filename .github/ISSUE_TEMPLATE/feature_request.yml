@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest an addition or change
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Design Bridge is deliberately small. The best proposals keep the IR
+        boring — see the "bar for new IR fields" in CONTRIBUTING.md.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The problem or workflow, not just the feature. What's blocked today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: If it touches the IR (`src/schema.js`), which Figma concept does the new field map to one-to-one?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - IR / schema (new node type or field)
+        - MCP server / tools
+        - Plugin rendering (code.js)
+        - Plugin UI / connection
+        - Docs
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

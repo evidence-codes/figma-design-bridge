@@ -1,0 +1,61 @@
+name: Bug report
+description: Something isn't working
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Most "it won't connect" issues are covered by the
+        checklist below — please run through it first, it saves a round-trip.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Connection checklist
+      description: Skip this only if the bug is unrelated to connecting.
+      options:
+        - label: The server is running (`node src/server.js` or `npx figma-design-bridge`)
+        - label: I ran `npx figma-design-bridge --doctor` and it reports Node 18+ and a free port
+        - label: The plugin panel is open in the Figma **desktop** app (not the browser)
+        - label: The plugin's Port field matches the server's port (default 3055)
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+
+  - type: textarea
+    id: status
+    attributes:
+      label: figma_status output
+      description: Ask your agent to call `figma_status` and paste the result.
+      render: text
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "macOS 14 · Node 22.3 · Figma desktop · figma-design-bridge 0.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Plugin console output (if relevant)
+      description: "Figma: `Plugins → Development → Show/Hide console`. Paste any errors."
+      render: text
